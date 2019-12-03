@@ -12,6 +12,13 @@ var chat =
     maxSavedSubmittedMessages: 30
 };
 
+var validEmoticons =[
+    { text: ":)", replacement: "ec ec-slightly-smiling-face" },
+    { text: "xd", replacement: "ec ec-laughing" },
+    { text: ":joy:", replacement: "ec ec-joy" },
+    { text: ":innocent:", replacement: "ec ec-innocent" },
+];
+
 function enableChatInput( enable )
 {
     if( chat.active === false && enable === true )
@@ -58,11 +65,22 @@ function addToSubmittedMessageHistory( message ) {
         chat.submittedMessageHistory.shift( );
 }
 
+function convertEmoticons( text )
+{
+    let output = text;
+
+    validEmoticons.forEach( e => {
+        output = output.split( e.text ).join( `<span class="${ e.replacement }"></span>` );
+    } );
+
+    return output;
+}
+
 var chatAPI =
 {
     push: ( text ) =>
     {
-        chat.container.prepend( "<li>" + text + "</li>" );
+        chat.container.prepend( "<li>" + convertEmoticons( text ) + "</li>" );
 
         chat.size++;
 
@@ -71,7 +89,6 @@ var chatAPI =
             chat.container.children( ":last" ).remove( );
         }
     },
-
     clear: ( ) =>
     {
         chat.container.html( "" );
